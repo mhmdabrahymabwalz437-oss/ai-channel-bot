@@ -9,9 +9,9 @@ class Settings:
     agent_name: str = os.getenv("AGENT_NAME", "ABU ALAZ manager channel")
     telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
     telegram_chat_id: str = os.getenv("TELEGRAM_CHAT_ID", "")
-    openai_api_key: str = os.getenv("OPENAI_API_KEY", "")
-    openai_api_base: str = os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1")
-    ai_model: str = os.getenv("AI_MODEL", "gpt-5-mini")
+    openai_api_key: str = os.getenv("GEMINI_API_KEY", os.getenv("OPENAI_API_KEY", ""))
+    openai_api_base: str = os.getenv("GEMINI_API_BASE", os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1"))
+    ai_model: str = os.getenv("AI_MODEL", "gemini-2.5-flash")
     content_prompt: str = os.getenv("CONTENT_PROMPT", "")
     language: str = os.getenv("LANGUAGE", "ar")
     timezone: str = os.getenv("TIMEZONE", "Africa/Cairo")
@@ -29,7 +29,7 @@ class Settings:
 
     def validate(self) -> None:
         missing = []
-        for key, value in (("TELEGRAM_BOT_TOKEN", self.telegram_bot_token), ("TELEGRAM_CHAT_ID", self.telegram_chat_id), ("OPENAI_API_KEY", self.openai_api_key), ("CONTENT_PROMPT", self.content_prompt)):
+        for key, value in (("TELEGRAM_BOT_TOKEN", self.telegram_bot_token), ("TELEGRAM_CHAT_ID", self.telegram_chat_id), ("GEMINI_API_KEY or OPENAI_API_KEY", self.openai_api_key), ("CONTENT_PROMPT", self.content_prompt)):
             if not value or "ضع_" in value:
                 missing.append(key)
         if missing:

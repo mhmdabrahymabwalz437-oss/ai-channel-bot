@@ -7,12 +7,16 @@ SYSTEM = """أنت محرر محتوى عربي محترف. أنشئ منشور�
 def generate(prompt: str, items, api_key: str, base_url: str, model: str) -> dict:
     client = OpenAI(api_key=api_key, base_url=base_url)
     sources = "\n".join(f"- {x.title}: {x.summary[:500]} ({x.url})" for x in items)
-    response = client.chat.completions.create(
+    request = dict(
         model=model,
         messages=[{"role": "system", "content": SYSTEM}, {"role": "user", "content": f"البرومبت: {prompt}\nالمصادر:\n{sources}"}],
         response_format={"type": "json_object"},
-        max_completion_tokens=1200,
     )
+    if "generativelanguage.googleapis.com" in base_url:
+        request["max_tokens"] = 1200
+    else:
+        request["max_completion_tokens"] = 1200
+    response = client.chat.completions.create(**request)
     data = json.loads(response.choices[0].message.content)
     for key in ("title", "caption"):
         if not isinstance(data.get(key), str) or not data[key].strip():

@@ -2,6 +2,8 @@
 
 بوت بايثون لقنوات Telegram: يقرأ برومبت المحتوى، يجمع عناوين من RSS، يولّد نصًا وكابشنًا، ويستخدم فيديو قصيرًا محليًا عند ضبط `VIDEO_PATH` أو صورة من المصادر، ثم ينشر تلقائيًا في الموعد المحدد.
 
+يستخدم الذكاء الاصطناعي عبر **Google Gemini API** من خلال واجهة OpenAI-compatible الرسمية.
+
 ## تشغيل سريع
 
 ```bash
@@ -15,6 +17,8 @@ python bot.py --once
 # تشغيل الجدولة اليومية:
 python bot.py
 ```
+
+للحصول على مفتاح Gemini استخدم [Google AI Studio](https://aistudio.google.com/app/apikey)، ثم ضعه في `GEMINI_API_KEY`. الإعداد الافتراضي هو `gemini-2.5-flash`.
 
 ابدأ مع `DRY_RUN=true`. بعد معاينة الملف الناتج والتأكد من الصلاحيات، غيّرها إلى `false`.
 
