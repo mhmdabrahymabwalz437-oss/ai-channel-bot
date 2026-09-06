@@ -6,6 +6,7 @@ load_dotenv()
 
 @dataclass(frozen=True)
 class Settings:
+    agent_name: str = os.getenv("AGENT_NAME", "ABU ALAZ manager channel")
     telegram_bot_token: str = os.getenv("TELEGRAM_BOT_TOKEN", "")
     telegram_chat_id: str = os.getenv("TELEGRAM_CHAT_ID", "")
     openai_api_key: str = os.getenv("OPENAI_API_KEY", "")

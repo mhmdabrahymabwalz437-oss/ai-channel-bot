@@ -42,7 +42,7 @@ def main():
     hour, minute = (int(x) for x in settings.post_time.split(":", 1))
     scheduler = BlockingScheduler(timezone=ZoneInfo(settings.timezone))
     scheduler.add_job(lambda: run_once(settings), "cron", hour=hour, minute=minute, id="daily-post", coalesce=True, max_instances=1)
-    print(f"Bot scheduled daily at {settings.post_time} ({settings.timezone}); dry_run={settings.dry_run}")
+    print(f"{settings.agent_name} scheduled daily at {settings.post_time} ({settings.timezone}); dry_run={settings.dry_run}")
     scheduler.start()
 
 if __name__ == "__main__":
