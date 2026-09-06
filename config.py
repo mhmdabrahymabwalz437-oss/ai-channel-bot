@@ -18,6 +18,8 @@ class Settings:
     language: str = os.getenv("LANGUAGE", "ar")
     timezone: str = os.getenv("TIMEZONE", "Africa/Cairo")
     post_time: str = os.getenv("POST_TIME", "18:00")
+    post_interval_minutes: int = int(os.getenv("POST_INTERVAL_MINUTES", "30"))
+    content_topics: tuple[str, ...] = tuple(x.strip() for x in os.getenv("CONTENT_TOPICS", "Python وكتابة كود نظيف,أمن الحسابات والتصيد الإلكتروني,الهكر الأخلاقي داخل مختبر مصرح,أخبار الثغرات والتحديثات الأمنية,أدوات المطورين والأمن السيبراني,الشبكات وحماية الخوادم").split(",") if x.strip())
     dry_run: bool = os.getenv("DRY_RUN", "true").lower() in {"1", "true", "yes"}
     rss_feeds: tuple[str, ...] = tuple(x.strip() for x in os.getenv("RSS_FEEDS", "").split(",") if x.strip())
     instagram_profiles: tuple[str, ...] = tuple(x.strip().lstrip("@").lower() for x in os.getenv("INSTAGRAM_PROFILES", "").split(",") if x.strip())

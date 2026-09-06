@@ -5,7 +5,7 @@ from zoneinfo import ZoneInfo
 from apscheduler.schedulers.blocking import BlockingScheduler
 from config import Settings
 from storage import Storage
-from sources import collect_items, download_image
+from sources import SourceItem, collect_items, download_image
 from instagram_source import download_latest_authorized_reel
 from ai import generate
 from publisher import TelegramPublisher
@@ -26,8 +26,18 @@ def run_once(settings: Settings):
     if instagram_download and not store.already_used(instagram_download.item.url):
         items.insert(0, instagram_download.item)
     if not items:
-        print("No new source items.")
-        return
+        slot = int(datetime.now().timestamp()) // (settings.post_interval_minutes * 60)
+        topic = settings.content_topics[slot % len(settings.content_topics)]
+        synthetic_url = f"internal://topic/{slot}"
+        if store.already_used(synthetic_url):
+            print("This interval was already published.", flush=True)
+            return
+        items = [SourceItem(
+            title=f"محور تعليمي: {topic}",
+            url=synthetic_url,
+            summary=f"أنشئ منشورًا أصليًا تعليميًا عن {topic} دون الحاجة إلى مصدر خارجي.",
+        )]
+        print(f"No new external source; using rotating topic: {topic}", flush=True)
     print("[3/4] Generating content with Gemini...", flush=True)
     result = generate(settings.content_prompt, items, settings.openai_api_key, settings.openai_api_base, settings.ai_model)
     source_url = items[0].url
@@ -54,10 +64,14 @@ def main():
     if args.once:
         run_once(settings)
         return
-    hour, minute = (int(x) for x in settings.post_time.split(":", 1))
     scheduler = BlockingScheduler(timezone=ZoneInfo(settings.timezone))
-    scheduler.add_job(lambda: run_once(settings), "cron", hour=hour, minute=minute, id="daily-post", coalesce=True, max_instances=1)
-    print(f"{settings.agent_name} scheduled daily at {settings.post_time} ({settings.timezone}); dry_run={settings.dry_run}")
+    def safe_run():
+        try:
+            run_once(settings)
+        except Exception as exc:
+            print(f"Run failed but scheduler will continue: {type(exc).__name__}: {exc}", flush=True)
+    scheduler.add_job(safe_run, "interval", minutes=settings.post_interval_minutes, id="recurring-post", next_run_time=datetime.now(ZoneInfo(settings.timezone)), coalesce=True, max_instances=1)
+    print(f"{settings.agent_name} running every {settings.post_interval_minutes} minutes ({settings.timezone}); dry_run={settings.dry_run}", flush=True)
     scheduler.start()
 
 if __name__ == "__main__":
