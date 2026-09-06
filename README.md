@@ -36,6 +36,17 @@ python bot.py
 
 لذلك المسار الآمن هو: **حسابات تملكها أو محتوى لديك إذن مكتوب بإعادة نشره → تخزين الملف في مجلد `media/` → فحصه → نشره على Telegram مع ذكر المصدر**. لا تضع كلمات مرور المنصات داخل `.env` ولا تستخدم scraping لتجاوز تسجيل الدخول أو القيود.
 
+### Instaloader لحسابات Instagram المصرح بها
+
+أضيفت مكتبة [Instaloader](https://github.com/instaloader/instaloader) كموصل اختياري. لا يعمل الموصل إلا عند تحديد حسابات مصرح بها وتفعيل التأكيد صراحة:
+
+```env
+INSTAGRAM_PROFILES=my_owned_profile,authorized_creator
+INSTAGRAM_RIGHTS_CONFIRMED=true
+```
+
+سيختار أحدث فيديو من الحسابات المحددة، ويحفظه محليًا، ثم يمرره إلى ناشر Telegram. لا يمرر البوت كلمة مرور Instagram، ولا يقبل حسابات عشوائية من المستخدمين، ولا يزيل العلامة المائية. استخدام Instaloader يبقى على مسؤولية المشغّل، ويجب إيقافه إذا خالف شروط Instagram أو إذن صاحب المحتوى.
+
 ## Instagram Reels وYouTube Shorts
 
 لا يمكن نشرهما عبر Telegram Bot API. يحتاج Instagram إلى حساب Professional وتطبيق Meta وAccess Token، ثم إنشاء container عبر `/{IG_ID}/media` باستخدام `media_type=REELS` و`video_url` عام، والانتظار حتى تجهز المعالجة ثم استدعاء `/{IG_ID}/media_publish`. يحتاج YouTube إلى OAuth 2.0 ونطاق `youtube.upload` واستدعاء `videos.insert` مع رفع resumable. تضاف هذه الموصلات كناشرين مستقلين بجانب `TelegramPublisher`، ولا ينبغي استخدام تسجيل دخول آلي أو scraping.

@@ -18,6 +18,9 @@ class Settings:
     post_time: str = os.getenv("POST_TIME", "18:00")
     dry_run: bool = os.getenv("DRY_RUN", "true").lower() in {"1", "true", "yes"}
     rss_feeds: tuple[str, ...] = tuple(x.strip() for x in os.getenv("RSS_FEEDS", "").split(",") if x.strip())
+    instagram_profiles: tuple[str, ...] = tuple(x.strip().lstrip("@").lower() for x in os.getenv("INSTAGRAM_PROFILES", "").split(",") if x.strip())
+    instagram_rights_confirmed: bool = os.getenv("INSTAGRAM_RIGHTS_CONFIRMED", "false").lower() in {"1", "true", "yes"}
+    instagram_login: str = os.getenv("INSTAGRAM_LOGIN", "")
     media_dir: str = os.getenv("MEDIA_DIR", "media")
     video_path: str = os.getenv("VIDEO_PATH", "")
     db_path: str = os.getenv("DB_PATH", "bot.db")

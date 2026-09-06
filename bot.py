@@ -6,6 +6,7 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from config import Settings
 from storage import Storage
 from sources import collect_items, download_image
+from instagram_source import download_latest_authorized_reel
 from ai import generate
 from publisher import TelegramPublisher
 
@@ -14,6 +15,13 @@ def run_once(settings: Settings):
     os.makedirs(settings.media_dir, exist_ok=True)
     store = Storage(settings.db_path)
     items = [x for x in collect_items(settings.rss_feeds, settings.max_source_items) if not store.already_used(x.url)]
+    instagram_download = download_latest_authorized_reel(
+        settings.instagram_profiles,
+        settings.media_dir,
+        settings.instagram_rights_confirmed,
+    )
+    if instagram_download and not store.already_used(instagram_download.item.url):
+        items.insert(0, instagram_download.item)
     if not items:
         print("No new source items.")
         return
@@ -21,6 +29,8 @@ def run_once(settings: Settings):
     source_url = items[0].url
     caption = f"{result['title']}\n\n{result['caption']}\n\nالمصدر: {source_url}"
     media_path = settings.video_path if settings.video_path and os.path.exists(settings.video_path) else ""
+    if instagram_download and instagram_download.item.url == source_url:
+        media_path = instagram_download.media_path
     if not media_path and items[0].image_url:
         media_path = os.path.join(settings.media_dir, "latest.jpg")
         if not download_image(items[0].image_url, media_path):
