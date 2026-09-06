@@ -15,7 +15,13 @@ class SourceItem:
 def collect_items(feeds: tuple[str, ...], limit: int) -> list[SourceItem]:
     out = []
     for feed_url in feeds:
-        parsed = feedparser.parse(feed_url)
+        try:
+            response = requests.get(feed_url, timeout=20, headers={"User-Agent": "ai-channel-bot/1.0"})
+            response.raise_for_status()
+            parsed = feedparser.parse(response.content)
+        except requests.RequestException as exc:
+            print(f"RSS source skipped ({feed_url}): {exc}", flush=True)
+            continue
         for entry in parsed.entries[:limit]:
             html = entry.get("summary", "")
             soup = BeautifulSoup(html, "html.parser")

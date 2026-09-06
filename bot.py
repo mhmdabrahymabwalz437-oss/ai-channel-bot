@@ -12,9 +12,12 @@ from publisher import TelegramPublisher
 
 
 def run_once(settings: Settings):
+    print(f"[{settings.agent_name}] starting one-shot run", flush=True)
     os.makedirs(settings.media_dir, exist_ok=True)
     store = Storage(settings.db_path)
+    print("[1/4] Reading sources...", flush=True)
     items = [x for x in collect_items(settings.rss_feeds, settings.max_source_items) if not store.already_used(x.url)]
+    print(f"[2/4] New source items: {len(items)}", flush=True)
     instagram_download = download_latest_authorized_reel(
         settings.instagram_profiles,
         settings.media_dir,
@@ -25,6 +28,7 @@ def run_once(settings: Settings):
     if not items:
         print("No new source items.")
         return
+    print("[3/4] Generating content with Gemini...", flush=True)
     result = generate(settings.content_prompt, items, settings.openai_api_key, settings.openai_api_base, settings.ai_model)
     source_url = items[0].url
     caption = f"{result['title']}\n\n{result['caption']}\n\nالمصدر: {source_url}"
@@ -35,6 +39,7 @@ def run_once(settings: Settings):
         media_path = os.path.join(settings.media_dir, "latest.jpg")
         if not download_image(items[0].image_url, media_path):
             media_path = ""
+    print(f"[4/4] Publishing (dry_run={settings.dry_run})...", flush=True)
     status = TelegramPublisher(settings.telegram_bot_token, settings.telegram_chat_id, settings.dry_run).publish(caption, media_path or None)
     store.save(result["title"], caption, source_url, media_path, status)
     print(f"[{status}] {result['title']}\n{caption}")
