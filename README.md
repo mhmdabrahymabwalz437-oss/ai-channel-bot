@@ -18,6 +18,8 @@ python bot.py --once
 python bot.py
 ```
 
+على Termux، هذه النسخة لا تحتاج حزمة `openai` أو Rust؛ فهي تستدعي Gemini عبر `requests` مباشرة لتجنب خطأ `jiter` مع Python 3.14.
+
 للحصول على مفتاح Gemini استخدم [Google AI Studio](https://aistudio.google.com/app/apikey)، ثم ضعه في `GEMINI_API_KEY`. الإعداد الافتراضي هو `gemini-2.5-flash`.
 
 ابدأ مع `DRY_RUN=true`. بعد معاينة الملف الناتج والتأكد من الصلاحيات، غيّرها إلى `false`.
