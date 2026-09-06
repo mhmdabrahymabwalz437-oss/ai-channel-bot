@@ -28,5 +28,10 @@ class TelegramPublisher:
                 r = requests.post(self.base + endpoint, data=data, files={field: fh}, timeout=timeout)
         else:
             r = requests.post(self.base + "/sendMessage", data={"chat_id": self.chat_id, "text": caption}, timeout=30)
-        r.raise_for_status()
+        if not r.ok:
+            try:
+                details = r.json().get("description", r.text[:300])
+            except ValueError:
+                details = r.text[:300]
+            raise RuntimeError(f"Telegram API rejected the request ({r.status_code}): {details}")
         return "published"
