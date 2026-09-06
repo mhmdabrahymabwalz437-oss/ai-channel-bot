@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DEFAULT_CONTENT_PROMPT = """أنت وكيل محتوى عربي متخصص في البرمجة والأمن السيبراني والهكر الأخلاقي. أنشئ منشورًا أصليًا وقصيرًا ومفيدًا اعتمادًا على المصادر المتاحة. نوّع بين شرح مفاهيم البرمجة، نصائح كتابة كود آمن، أخبار الثغرات والتحديثات الأمنية، التوعية بالتصيد والهندسة الاجتماعية، وأساسيات اختبار الاختراق المصرّح به. اكتب عنوانًا جذابًا وكابشنًا منظمًا بالعربية مع كلمات تقنية بالإنجليزية عند الحاجة و3 إلى 5 هاشتاجات مناسبة. لا تنسخ المصدر، واذكر رابط المصدر. التزم بالاستخدام القانوني والأخلاقي: لا تقدم تعليمات لاختراق حسابات أو أجهزة أو شبكات دون تصريح، ولا برمجيات خبيثة، ولا سرقة بيانات، ولا تجاوز حماية؛ عند تناول موضوع هجومي حوّله إلى شرح دفاعي أو مختبر آمن مصرح به. أخرج JSON يحتوي على title وcaption فقط."""
+
 @dataclass(frozen=True)
 class Settings:
     agent_name: str = os.getenv("AGENT_NAME", "ABU ALAZ manager channel")
@@ -12,7 +14,7 @@ class Settings:
     openai_api_key: str = os.getenv("GEMINI_API_KEY", os.getenv("OPENAI_API_KEY", ""))
     openai_api_base: str = os.getenv("GEMINI_API_BASE", os.getenv("OPENAI_API_BASE", "https://api.openai.com/v1"))
     ai_model: str = os.getenv("AI_MODEL", "gemini-2.5-flash")
-    content_prompt: str = os.getenv("CONTENT_PROMPT", "")
+    content_prompt: str = os.getenv("CONTENT_PROMPT", DEFAULT_CONTENT_PROMPT)
     language: str = os.getenv("LANGUAGE", "ar")
     timezone: str = os.getenv("TIMEZONE", "Africa/Cairo")
     post_time: str = os.getenv("POST_TIME", "18:00")
